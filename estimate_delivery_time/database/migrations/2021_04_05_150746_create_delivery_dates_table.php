@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDeliveriesTable extends Migration
+class CreateDeliveryDatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateDeliveriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('deliveries', function (Blueprint $table) {
-            $table->id();
-            $table->integer("zip_code");
+        Schema::create('delivery_dates', function (Blueprint $table) {
+            $table->foreignId("zip_code_id");
             $table->dateTime("shipment_date");
             $table->dateTime("delivered_date");
 
