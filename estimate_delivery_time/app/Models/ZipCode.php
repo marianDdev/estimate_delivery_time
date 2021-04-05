@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ZipCode extends Model
 {
     use HasFactory;
+
+    public function deliveries() {
+        return $this->hasMany(Delivery::class);
+    }
 }

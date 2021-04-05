@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Delivery extends Model
 {
     use HasFactory;
+
+    public function zipCode() {
+        return $this->belongsTo(ZipCode::class);
+    }
 }
