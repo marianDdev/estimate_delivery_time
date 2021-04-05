@@ -15,7 +15,10 @@ class CreateDeliveriesTable extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->integer("zip_code");
+            $table->dateTime("shipment_date");
+            $table->dateTime("delivered_date");
+
         });
     }
 
