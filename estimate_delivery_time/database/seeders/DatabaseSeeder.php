@@ -13,6 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        foreach (range(1,5) as $index) {
+            $this->call(ZipCodesSeeder::class);
+        }
+
     }
 }
