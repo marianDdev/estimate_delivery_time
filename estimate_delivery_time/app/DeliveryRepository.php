@@ -9,10 +9,10 @@ class DeliveryRepository
 {
     public function getDeliveryTimeDates(int $zipCode): Collection
     {
-        return DB::table("delivery_dates")->select("shipment_date", "delivered_date")
+        return DB::table("delivery_dates")->select("delivery_dates.shipment_date", "delivery_dates.delivered_date")
                                           ->join("zip_codes", "zip_codes.id", "=", "delivery_dates.zip_code_id")
-                                          ->where("zip_code", $zipCode)
-                                          ->orderBy("shipment_date")
+                                          ->where("zip_codes.zip_code", $zipCode)
+                                          ->orderBy("delivery_dates.shipment_date")
                                           ->get();
     }
 }
