@@ -4,8 +4,7 @@ namespace App\Services;
 
 use App\DeliveryRepository;
 use Carbon\Carbon;
-use Illuminate\Contracts\Validation\Factory as Validator;
-
+use Illuminate\Validation\Factory as Validator;
 
 class DeliveryService
 {
@@ -20,21 +19,23 @@ class DeliveryService
 
     public function estimateDeliveryTime(array $input): string
     {
-        $validated = $this->validator->make(
-            $input,
-            [
-                "zip_code" => ["required", "int", "min:5"],
-            ],
-            [
-                "zip_code.required" => "required",
-                "zip_code.int" => "integer",
-                "zip_code.min" => "min::min",
-            ]
-        )->validate();
 
-        [ "zip_code" => $zipCode ] = $validated;
+            $validated = $this->validator->make(
+                $input,
+                [
+                    "zip_code" => ["required", "int", "min:5"],
+                ],
+                [
+                    "zip_code.required" => "required",
+                    "zip_code.int" => "integer",
+                    "zip_code.min" => "min::min"
+                ]
+            )->validate();
 
-        $deliveryDates = $this->deliveryRepository->getDeliveryTimeDates($zipCode)->toArray();
+       ["zip_code" => $zipCode] = $validated;
+
+        //all the shipment and delivered dates related to requested zip code
+        $deliveryDates = $this->deliveryRepository->getDeliveryTimeDates($zipCode);
 
         //array of days passed from shipment date to delivered date
         $deliveryPeriods = [];
@@ -56,11 +57,7 @@ class DeliveryService
        $mostFrequentDeliveryPeriod = array_key_first($deliveryPeriodsCount);
 
        //estimate delivery date by adding the most frequent delivery period of days to current date
-       $deliverydate = Carbon::now()->addDays($mostFrequentDeliveryPeriod)->toDateTimeString();
-
-
-        return $deliverydate;
-
+        return Carbon::now()->addDays($mostFrequentDeliveryPeriod)->toDateTimeString();
     }
 
 }
