@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Delivery extends Model
+class DeliveryDate extends Model
 {
     use HasFactory;
-
-    public function zipCode() {
-        return $this->belongsTo(ZipCode::class);
-    }
 }

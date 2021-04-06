@@ -2,48 +2,42 @@
 
 namespace App\Services;
 
-use App\DeliveryRepository;
+use App\Repositories\DeliveryRepository;
+use App\Repositories\ZipCodesRepository;
 use Carbon\Carbon;
-use Illuminate\Validation\Factory as Validator;
+use Illuminate\Contracts\Validation\Factory as Validator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class DeliveryService
 {
     private $deliveryRepository;
     private $validator;
+    private $zipCodesRepository;
 
-    public function __construct(DeliveryRepository $deliveryRepository, Validator $validator)
+    public function __construct(DeliveryRepository $deliveryRepository, ZipCodesRepository $zipCodesRepository, Validator $validator)
     {
         $this->deliveryRepository = $deliveryRepository;
         $this->validator = $validator;
+        $this->zipCodesRepository = $zipCodesRepository;
     }
 
-    public function estimateDeliveryTime(array $input): string
+    public function estimateDeliveryTime(int $code): string
     {
+        $zipCode = $this->zipCodesRepository->getZipCode($code);
 
-            $validated = $this->validator->make(
-                $input,
-                [
-                    "zip_code" => ["required", "int", "min:5"],
-                ],
-                [
-                    "zip_code.required" => "required",
-                    "zip_code.int" => "integer",
-                    "zip_code.min" => "min::min"
-                ]
-            )->validate();
-
-       ["zip_code" => $zipCode] = $validated;
-
-        //all the shipment and delivered dates related to requested zip code
-        $deliveryDates = $this->deliveryRepository->getDeliveryTimeDates($zipCode);
+        if($zipCode === ModelNotFoundException::class) {
+            return "Zip Code not found";
+        }
+        $deliveryDates = $this->deliveryRepository->getDeliveryDatesByZipCode($zipCode->zip_code)->toArray();
 
         //array of days passed from shipment date to delivered date
         $deliveryPeriods = [];
 
         //get number of days passed from shipment date to delivered date for each delivery
         foreach ($deliveryDates as $date) {
-            $shipmentDate = Carbon::createFromFormat('Y-m-d H:s:i', $date->shipment_date);
-            $deliveredDate = Carbon::createFromFormat('Y-m-d H:s:i', $date->delivered_date);
+            $shipmentDate = Carbon::createFromFormat('Y-m-d H:s:i', $date["shipment_date"]);
+            $deliveredDate = Carbon::createFromFormat('Y-m-d H:s:i', $date["delivered_date"]);
 
             $deliveryPeriods[] = $deliveredDate->diffInWeekdays($shipmentDate);
         }
@@ -58,6 +52,7 @@ class DeliveryService
 
        //estimate delivery date by adding the most frequent delivery period of days to current date
         return Carbon::now()->addDays($mostFrequentDeliveryPeriod)->toDateTimeString();
+
     }
 
 }

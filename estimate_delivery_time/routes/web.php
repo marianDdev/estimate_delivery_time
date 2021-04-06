@@ -18,4 +18,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get("/estimate-time",DeliveryController::class);
+Route::get("/estimate-time/{zipCode}",DeliveryController::class);

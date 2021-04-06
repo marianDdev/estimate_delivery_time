@@ -24,8 +24,8 @@ class DeliveryController extends Controller
         $this->deliveryService = $deliveryService;
     }
 
-    public function __invoke(): JsonResponse
+    public function __invoke(int $zipCode): JsonResponse
     {
-        return $this->response->json($this->deliveryService->estimateDeliveryTime($this->request->input()));
+        return $this->response->json($this->deliveryService->estimateDeliveryTime($zipCode));
     }
 }
